@@ -3,6 +3,22 @@ const server = express();
 const CORS = require("cors");
 const bcrypt = require('bcryptjs');
 
+const session = require('express-session');
+
+server.use(
+  session({
+    name: 'hecc', 
+    secret: 'omega hecc',
+    cookie: {
+      maxAge: 1 * 24 * 60 * 60 * 1000,
+      secure: true,
+    }, 
+    httpOnly: true,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
 server.use(express.json());
 server.use(CORS());
 
@@ -18,6 +34,20 @@ server.get('/users/', (req, res) => {
         res.status(500).json({error: 'An error has occured!'});
 
     });
+
+});
+
+server.get('/logout/', (req, res) => {
+
+    if (req.session) {
+        req.session.destroy(err => {
+          if (err) {
+            res.status(401).json({error: 'error logging out.'});
+          } else {
+            res.status(200).json({response: 'Succesfully logged out.'});
+          }
+        });
+      }
 
 });
 
@@ -52,6 +82,9 @@ server.post('/login/', (req, res) => {
             return res.status(401).json({ error: 'Incorrect credentials' });
         }
 
+        req.session.ID = user.id;
+        req.session.name = user.username;
+
         res.status(200).json({response: 'Login succesfull!'});
 
     }).catch(err => {
@@ -60,24 +93,6 @@ server.post('/login/', (req, res) => {
         res.status(500).json({error: 'Error attempting to login!'});
     
     });
-
-
-
-    // console.log(req.body);
-
-    // database.addResource(req.body).then(result => {
-
-    //     console.log(result);
-    //     database.getResourceById(result.id).then(resource => {
-    //         res.status(201).json({resource});
-    //     });
-
-    // }).catch(err => {
-
-    //     console.log(err);
-    //     res.status(500).json({error: 'There was an error while saving the resource to the database!'});
-
-    // });
 
 });
 
