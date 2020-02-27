@@ -34,6 +34,25 @@ function App() {
       });
   };
 
+  var logout = () => {
+
+    axios().get("http://localhost:5000/logout/")
+    .then(result => {
+      console.log(result);
+      // localStorage.setItem("ID", result.data.id);
+      // localStorage.setItem(
+      //   "name",
+      //   document.getElementById("username-input").value,
+      // );
+      // localStorage.setItem("token", result.data.token);
+      // window.location = "/dashboard";
+    })
+    .catch(err => {
+      console.log(err);
+    });
+
+  }
+
   return (
     <div className="App">
       <form onSubmit={onSubmit}>
@@ -41,6 +60,7 @@ function App() {
         <input type='text' placeholder='Password' name='password' onChange={handleChange}/>
         <button>Login</button>
       </form>
+      <button onClick={() => {logout()}}>Logout</button> 
     </div>
   );
 }
